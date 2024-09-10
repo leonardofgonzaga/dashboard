@@ -2,10 +2,10 @@
 
 namespace App\Enums;
 
-enum status: string
+enum Status: string
 {
     case PENDING = 'P';
     case APPROVED = 'A';
-    case PENDING = 'C';
+    case CANCELED = 'C';
 }
 
