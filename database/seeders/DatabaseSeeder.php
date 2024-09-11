@@ -28,6 +28,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class
         ]);
 
-        DB::unprepared("REFRESH MATERIALIZED VIEW sales_comission_view");
+        DB::unprepared("REFRESH MATERIALIZED VIEW sales_commission_view");
     }
 }
