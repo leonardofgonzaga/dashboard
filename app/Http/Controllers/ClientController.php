@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Client;
+use App\Models\Address;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 
@@ -26,7 +30,8 @@ class ClientController extends Controller
      */
     public function create()
     {
-        //
+        $addresses = Address::all();
+        return view('clients.create', ['addresses' => $addresses]);
     }
 
     /**
@@ -37,18 +42,19 @@ class ClientController extends Controller
      */
     public function store(StoreClientRequest $request)
     {
-        //
-    }
+        DB::transaction(function() use ($request) {
+            $user = User::create([
+                'email' => $request->get('email'),
+                'name' => $request->get('name'),
+                'password' => Hash::make('123456')
+            ]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Client  $client
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Client $client)
-    {
-        //
+            $user->client()->create([
+                'address_id' =>$request->get('address_id')
+            ]);
+        });
+
+        return redirect()->route('clients.index');
     }
 
     /**
@@ -59,7 +65,7 @@ class ClientController extends Controller
      */
     public function edit(Client $client)
     {
-        //
+        return view('clients.edit', compact('client'));
     }
 
     /**
@@ -71,7 +77,19 @@ class ClientController extends Controller
      */
     public function update(UpdateClientRequest $request, Client $client)
     {
-        //
+        DB::transaction(function() use ($request, $client) {
+            $client->user->update([
+                'email' => $request->get('email'),
+                'name' => $request->get('name'),
+                'password' => Hash::make('123456')
+            ]);
+
+            $client->update([
+                'address_id' =>$request->get('address_id')
+            ]);
+        });
+
+        return redirect()->route('clients.index');
     }
 
     /**
